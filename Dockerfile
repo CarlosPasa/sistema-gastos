@@ -9,7 +9,18 @@ COPY docker/supervisord.conf /etc/supervisor/conf.d/mt2.conf
 COPY docker/start.sh /usr/local/bin/mt2-start
 RUN chmod +x /usr/local/bin/mt2-start && mkdir -p /run/php /var/log/supervisor
 COPY . /var/www/html
-RUN if [ -f composer.json ]; then composer install --no-interaction --prefer-dist --no-progress --optimize-autoloader; fi \
- && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache 2>/dev/null || true
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --prefer-dist \
+    --no-progress \
+    --optimize-autoloader \
+    --no-scripts \
+ && mkdir -p storage/framework/cache/data \
+             storage/framework/sessions \
+             storage/framework/views \
+             storage/logs \
+             bootstrap/cache \
+ && chown -R www-data:www-data storage bootstrap/cache
 EXPOSE 10000
 CMD ["/usr/local/bin/mt2-start"]
