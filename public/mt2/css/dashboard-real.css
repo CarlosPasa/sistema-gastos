@@ -1,0 +1,134 @@
+/* Additional styles for the live-data dashboard; keep the existing theme CSS. */
+.mt2-real-head { display:flex; justify-content:space-between; gap:20px; align-items:center; flex-wrap:wrap; }
+.mt2-dashboard-filter { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.mt2-dashboard-filter label { color:var(--muted,#93a8c3); font-size:12px; }
+.mt2-dashboard-filter select { min-width:95px; width:auto; height:43px; padding:0 10px; border-radius:10px; border:1px solid var(--border,#293d56); background:var(--pane2,#12243f);color:var(--text,#eef5ff);font:inherit; color-scheme:dark; }
+body.light .mt2-dashboard-filter select { color-scheme:light; }
+.mt2-dashboard-filter button {height:43px;white-space:nowrap;}
+.mt2-real-donut { background:#243b57; }
+.mt2-real-bottom .notice { margin-top:15px; }
+.breakdown .dot { display:inline-block; width:10px; height:10px; border-radius:50%;margin-right:8px;flex-shrink:0; }
+.breakdown > div { min-width:0; }
+.breakdown > div span { display:inline-flex;min-width:0;align-items:center;overflow-wrap:anywhere; }
+.mt2-real-bottom .table-scroll {overflow:auto;}
+@media (max-width:850px) { .mt2-dashboard-filter { width:100%; } .mt2-dashboard-filter select { flex:1; min-width:0; } }
+
+/* ======================================
+   MT 2.0 - Presupuestos recurrentes
+   ====================================== */
+
+.mt2-budget-dashboard {
+    min-width: 0;
+}
+
+.mt2-budget-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 18px 0 24px;
+}
+
+.mt2-budget-summary > div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px;
+    background: rgba(59, 130, 246, 0.07);
+    border: 1px solid rgba(100, 140, 200, 0.15);
+    border-radius: 12px;
+}
+
+.mt2-budget-summary span {
+    font-size: 12px;
+    color: #91a9cc;
+}
+
+.mt2-budget-summary strong {
+    font-size: 20px;
+    color: inherit;
+}
+
+.mt2-budget-list {
+    display: flex;
+    flex-direction: column;
+    gap: 23px;
+    margin-bottom: 24px;
+}
+
+.mt2-budget-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mt2-budget-item-head,
+.mt2-budget-item-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.mt2-budget-item-head > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.mt2-budget-item-head strong {
+    font-size: 14px;
+}
+
+.mt2-budget-item-head small,
+.mt2-budget-item-footer {
+    color: #91a9cc;
+    font-size: 12px;
+}
+
+.mt2-budget-item-head > span {
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.mt2-budget-track {
+    width: 100%;
+    height: 9px;
+    background: rgba(130, 157, 198, 0.17);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.mt2-budget-progress {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.3s ease;
+}
+
+.mt2-budget-progress.success {
+    background: #34d6ad;
+}
+
+.mt2-budget-progress.warning {
+    background: #ffc866;
+}
+
+.mt2-budget-progress.danger {
+    background: #ff7284;
+}
+
+@media (max-width: 600px) {
+    .mt2-budget-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .mt2-budget-item-head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .mt2-budget-item-head > span {
+        white-space: normal;
+    }
+}

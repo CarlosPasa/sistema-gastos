@@ -1,0 +1,393 @@
+:root{--bg:#071221;--pane:#101f35;--pane2:#11243f;--text:#eef5ff;--muted:#95acc7;--border:#263b56;--blue:#4b91ff;--green:#34d6ad;--red:#ff7284;--gold:#ffc866;--sidebar:#0b1b32}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px}body.light{--bg:#f1f5fa;--pane:#fff;--pane2:#edf4fc;--text:#162c45;--muted:#627a92;--border:#d8e4f0;--sidebar:#e6effa}aside{position:fixed;inset:0 auto 0 0;width:222px;background:var(--sidebar);border-right:1px solid var(--border);padding:24px 13px;display:flex;flex-direction:column}.logo{font-size:25px;font-weight:850;letter-spacing:-1px;padding:4px 13px 32px}.logo b{color:var(--blue)}nav a{display:flex;gap:13px;align-items:center;padding:13px 15px;margin-bottom:5px;border-radius:12px;color:var(--muted);text-decoration:none;font-weight:550}nav a.current{background:linear-gradient(95deg,#2469d5,#14335e);color:#fff}nav .symbol{font-size:18px;width:24px;text-align:center}.side-note{margin-top:auto;padding:16px 10px;color:var(--muted);line-height:1.7;font-size:12px}main{margin-left:222px;max-width:1800px}.top{height:72px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 27px;gap:18px}.search{border-radius:12px;padding:11px 18px;background:var(--pane);color:var(--muted);width:min(440px,55%);border:1px solid var(--border)}.profile{display:flex;align-items:center;gap:12px;font-weight:700}.avatar{display:grid;place-items:center;background:#2864bf;border-radius:50%;width:36px;height:36px;color:white}.content{padding:26px}h1{font-size:30px;letter-spacing:-.8px;margin:0 0 4px}.sub{color:var(--muted);margin:0}.head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px}.select,.btn{cursor:pointer;background:var(--pane);color:var(--text);padding:10px 14px;border:1px solid var(--border);border-radius:10px;font:inherit}.btn:hover{border-color:var(--blue)}.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card{background:var(--pane);border:1px solid var(--border);border-radius:16px;padding:19px;min-width:0}.kpi{min-height:151px;position:relative;overflow:hidden}.kpi.primary{background:linear-gradient(135deg,#1b509d 0%,#122a4c 65%,var(--pane) 100%)}.kpi .ico{display:inline-grid;place-items:center;border-radius:12px;font-size:22px;width:44px;height:44px;margin-bottom:14px;background:#224779}.kpi:nth-child(2) .ico{background:#164c49}.kpi:nth-child(3) .ico{background:#633044}.kpi:nth-child(4) .ico{background:#534479}.label{color:var(--muted);font-size:13px}.amount{font-size:27px;font-weight:750;letter-spacing:-1px;margin-top:6px}.desc{font-size:12px;color:var(--muted);margin-top:8px}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.section{display:grid;grid-template-columns:1.55fr 1fr;gap:14px;margin-top:14px}.bottom{display:grid;grid-template-columns:1fr 1.12fr .94fr;gap:14px;margin-top:14px}.card h2{font-size:17px;margin:0 0 3px}.card p{color:var(--muted);margin:0 0 22px;font-size:12px}.chart-wrap{height:238px;position:relative}.chart-wrap svg{width:100%;height:100%;overflow:visible}.legend{display:flex;gap:20px;justify-content:center;color:var(--muted);font-size:12px}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px}.donut-section{display:flex;align-items:center;gap:24px;justify-content:center;min-height:225px}.donut{height:178px;width:178px;border-radius:50%;background:conic-gradient(#ff7284 0 33%,#ffc866 33% 58%,#4b91ff 58% 78%,#9e85fc 78% 91%,#38c9b9 91% 100%);display:grid;place-items:center;flex-shrink:0}.donut-inner{height:123px;width:123px;background:var(--pane);border-radius:50%;display:grid;place-items:center;text-align:center;font-size:20px;font-weight:800}.donut-inner small{font-size:11px;color:var(--muted);display:block;font-weight:400;margin-top:4px}.breakdown{flex:1}.breakdown>div{display:flex;justify-content:space-between;gap:15px;padding:10px 0;color:var(--muted);font-size:12px}.breakdown b{color:var(--text)}.budget{margin-top:20px}.budget-item{margin:0 0 18px}.budget-head{display:flex;justify-content:space-between;font-size:12px;margin-bottom:10px;gap:10px}.track{height:8px;background:var(--pane2);border-radius:15px;overflow:hidden}.bar{height:100%;border-radius:15px;background:var(--blue)}table{border-collapse:collapse;width:100%;font-size:12px}td,th{padding:12px 4px;text-align:left;border-bottom:1px solid var(--border)}th{color:var(--muted);font-weight:500}td:last-child,th:last-child{text-align:right}td small{display:block;color:var(--muted);margin-top:3px}.notice{padding:14px;background:var(--pane2);border:1px solid var(--border);border-radius:12px;margin-bottom:11px}.notice strong{font-size:12px}.notice p{font-size:11px;margin:7px 0 0;line-height:1.5}.hint{font-size:11px;color:var(--muted);margin-top:18px}.tag{display:inline-block;font-size:11px;background:#246b5933;color:var(--green);padding:5px 8px;border-radius:8px}@media(max-width:1220px){.kpis{grid-template-columns:repeat(2,1fr)}.bottom{grid-template-columns:1fr 1fr}.bottom>.card:last-child{grid-column:span 2}}@media(max-width:850px){aside{width:65px;padding:19px 6px}.logo{font-size:13px;padding:0 4px 25px}.logo b{display:none}nav a{font-size:0;justify-content:center;padding:12px}nav .symbol{font-size:19px}.side-note{display:none}main{margin-left:65px}.section,.bottom{grid-template-columns:1fr}.bottom>.card:last-child{grid-column:auto}.content{padding:15px}.top{padding:0 14px}.donut-section{flex-wrap:wrap}}@media(max-width:550px){.kpis{grid-template-columns:1fr}.head{align-items:start;flex-direction:column}.top{height:60px}.profile span:last-child{display:none}.amount{font-size:25px}}
+
+/* MT2 responsive donut card: avoids legend overflow. */
+.donut-section{display:grid;grid-template-columns:minmax(115px, .85fr) minmax(0,1fr);gap:16px;min-width:0;justify-items:center}
+.donut{width:min(100%,180px);height:auto;aspect-ratio:1}
+.donut-inner{width:70%;height:70%;min-width:0;font-size:clamp(13px,1.4vw,21px)}
+.breakdown{width:100%;min-width:0}
+.breakdown>div{min-width:0;gap:8px;align-items:center;padding:8px 0}
+.breakdown>div span{min-width:0;overflow-wrap:anywhere}
+.breakdown b{white-space:nowrap;flex-shrink:0}
+.duotone-icon{width:23px;height:23px;object-fit:contain;vertical-align:middle}
+nav .duotone-icon{width:22px;height:22px}
+.card:focus-within{outline:1px solid var(--blue)}
+@media(max-width:1420px){.donut-section{grid-template-columns:1fr}.donut{width:154px}.breakdown{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:14px}}
+@media(max-width:1000px){.donut-section{grid-template-columns:minmax(120px, 1fr) minmax(0,1fr)}.breakdown{display:block}}
+@media(max-width:530px){.donut-section{grid-template-columns:1fr}.breakdown{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Entrega 02: menu lateral plegable y mobile drawer */
+.top-start{display:flex;align-items:center;gap:12px;min-width:0;flex:1}.top-start .search{width:min(440px,100%);min-width:0;display:flex;align-items:center;gap:8px}.search-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.profile{flex-shrink:0}.icon-button{appearance:none;display:inline-grid;place-items:center;width:40px;height:40px;background:var(--pane);border:1px solid var(--border);border-radius:10px;color:var(--text);font:inherit;cursor:pointer}.icon-button:hover,.collapse-btn:hover{border-color:var(--blue)}.menu-toggle,.side-close{display:none}.side-header{display:flex;align-items:center;justify-content:space-between}.side-header .logo{text-decoration:none;color:var(--text);display:block;white-space:nowrap}.side-nav{overflow-y:auto;overflow-x:hidden;min-height:0}.side-nav a{white-space:nowrap}.side-nav .nav-label{font-size:14px}.collapse-btn{appearance:none;background:var(--pane);border:1px solid var(--border);color:var(--muted);width:100%;border-radius:10px;min-height:40px;cursor:pointer;text-align:left;padding:10px 15px;display:flex;align-items:center;gap:12px}.collapse-symbol{font-size:19px;display:inline-block;min-width:20px;text-align:center}.sidebar-backdrop{display:none}.sidebar-backdrop[hidden]{display:none!important}
+@media(min-width:851px){body.sidebar-collapsed aside{width:72px;padding-inline:7px}body.sidebar-collapsed main{margin-left:72px}body.sidebar-collapsed .side-header .logo{font-size:20px;padding:4px 10px 25px}body.sidebar-collapsed .side-header .logo span,body.sidebar-collapsed .nav-label,body.sidebar-collapsed .side-note{display:none}body.sidebar-collapsed .side-nav a{justify-content:center;padding:12px 8px}body.sidebar-collapsed .collapse-btn{justify-content:center;padding:8px}body.sidebar-collapsed .collapse-symbol{transform:rotate(180deg)}}
+@media(max-width:850px){aside{width:min(290px,86vw);padding:18px 12px;z-index:1001;transform:translateX(-105%);transition:transform .22s ease;box-shadow:16px 0 44px #0006}.side-header .logo{font-size:24px;padding:4px 12px 24px}.side-header .logo b{display:inline}.side-nav a{font-size:14px;justify-content:flex-start;padding:12px 14px;gap:13px}.side-nav .nav-label{display:inline}.side-note{display:block}.side-close,.menu-toggle{display:inline-grid}main{margin-left:0;max-width:none}body.sidebar-open aside{transform:translateX(0)}body.sidebar-open{overflow:hidden}body.sidebar-open .sidebar-backdrop{display:block;position:fixed;inset:0;background:rgba(0,8,20,.68);z-index:1000}.collapse-btn{display:none}.top{height:64px;padding:0 15px;gap:10px}.top-start .search{width:auto;flex:1}.profile-text{display:none}}
+@media(max-width:550px){.top{padding:0 12px;height:62px}.top-start{gap:8px}.top-start .search{padding:9px 10px}.search-label{display:none}.top-start .search{flex:0 0 40px;width:40px;height:40px;justify-content:center}.profile{gap:8px}.theme-button{min-width:40px;width:40px;padding:0;min-height:40px}.theme-button span{display:none}.avatar{width:35px;height:35px}.content{padding:14px 12px}.head{gap:12px;margin-bottom:18px}.select{max-width:100%}.kpis{gap:10px}.card{padding:16px}.donut-section{grid-template-columns:1fr}.breakdown{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.chart-wrap{overflow:hidden}.chart-wrap svg{min-width:0}}
+@media(max-width:380px){.breakdown{grid-template-columns:1fr}.top{gap:6px}.profile{gap:5px}}
+@media(prefers-reduced-motion:reduce){aside{transition:none}}
+
+
+/* Entrega 03: header fijo visualmente (sticky), sidebar expandido en escritorio. */
+html{scroll-behavior:smooth;scroll-padding-top:94px}
+main{min-width:0}
+.top{position:sticky;top:0;z-index:70;background:var(--bg);box-shadow:0 6px 24px rgba(0,0,0,.12);isolation:isolate}
+.collapse-btn{display:none!important}
+.side-nav .duotone-icon{filter:brightness(0) invert(.74)}
+.side-nav a.current .duotone-icon{filter:brightness(0) invert(1)}
+.side-nav a:hover{background:rgba(75,145,255,.1);color:var(--text)}
+.side-nav a.current:hover{background:linear-gradient(95deg,#2469d5,#14335e);color:#fff}
+.back-to-top{position:fixed;z-index:80;right:22px;bottom:24px;width:47px;height:47px;border-radius:13px;border:1px solid rgba(155,190,243,.35);background:#2469d5;color:#fff;font:700 25px/1 system-ui;cursor:pointer;box-shadow:0 9px 24px #0007;display:grid;place-items:center;transition:transform .18s,opacity .18s}
+.back-to-top:hover{transform:translateY(-4px);background:#347eff}
+.back-to-top[hidden]{display:none!important}
+@media (max-width:850px){
+ .top{z-index:70}
+ aside{z-index:102;box-shadow:15px 0 46px rgba(0,0,0,.56);border-right:1px solid var(--border)}
+ body.sidebar-open .sidebar-backdrop{z-index:101}
+ .side-header{border-bottom:1px dashed var(--border);margin-bottom:16px}
+ .side-header .logo{padding:4px 12px 18px}
+ .side-close{margin-bottom:14px}
+ .side-nav a{min-height:49px}
+ .back-to-top{right:14px;bottom:17px;width:44px;height:44px}
+}
+@media(max-width:550px){
+ .top{height:62px}
+ .top-start{flex:1;min-width:0}
+ .menu-toggle{flex:none}
+ .top-start .search{flex:1;width:auto;min-width:0;max-width:240px;justify-content:flex-start}
+ .search-label{display:inline;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
+ .profile{flex:none}
+ .profile .theme-button{flex:none}
+ .top .avatar{flex:none}
+}
+@media(max-width:390px){.search-label{display:none}.top-start .search{flex:0 0 38px;width:38px;justify-content:center}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.back-to-top{transition:none}}
+
+/* Entrega 04: escritorio tipo Metronic, contraer/expandir desde el encabezado lateral. */
+.desktop-collapse{display:none}
+@media(min-width:851px){
+  aside,main{transition:width .22s ease,margin-left .22s ease}
+  .side-header{gap:4px;align-items:flex-start}
+  .side-header .logo{flex:1;min-width:0}
+  .desktop-collapse{display:inline-grid;flex:none;margin-top:0;width:33px;height:33px;border-radius:8px;font-size:19px}
+  body.sidebar-collapsed aside{width:72px;padding:22px 8px}
+  body.sidebar-collapsed main{margin-left:72px}
+  body.sidebar-collapsed .side-header{display:flex;flex-direction:column;align-items:center;gap:14px}
+  body.sidebar-collapsed .side-header .logo{font-size:19px;padding:4px 0 0;line-height:1.1}
+  body.sidebar-collapsed .side-header .logo span{display:none}
+  body.sidebar-collapsed .desktop-collapse{width:37px;height:34px}
+  body.sidebar-collapsed .desktop-collapse span{display:inline-block;transform:rotate(180deg)}
+  body.sidebar-collapsed .side-nav .nav-label,body.sidebar-collapsed .side-note{display:none}
+  body.sidebar-collapsed .side-nav a{justify-content:center;padding:12px 6px;gap:0}
+  body.sidebar-collapsed .side-nav .symbol{width:26px}
+}
+@media(max-width:850px){.desktop-collapse{display:none!important}}
+@media(prefers-reduced-motion:reduce){aside,main{transition:none}}
+
+/* MT2: boton lateral superpuesto, por encima de la cabecera fija */
+@media(min-width:851px){#sidebar{position:fixed;overflow:visible!important;z-index:1100!important}.desktop-collapse,body.sidebar-collapsed .desktop-collapse{position:absolute!important;top:27px!important;right:-15px!important;z-index:1101!important;width:30px!important;height:30px!important;min-width:30px!important;display:flex!important;align-items:center;justify-content:center;background:#252946;border:1px solid #343957;border-radius:7px;color:#558fff}.side-header .logo{padding-right:20px}}
+/* MT 2.0 - Botón de cierre de sesión */
+form.mt2-logout-form {
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+form.mt2-logout-form button.mt2-logout-button {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: auto;
+    min-height: 40px;
+    padding: 9px 14px;
+    margin: 0;
+    background: #10213a;
+    border: 1px solid #28415f;
+    border-radius: 10px;
+    color: #e2e8f0;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    transition: background .2s, border-color .2s;
+}
+
+form.mt2-logout-form button.mt2-logout-button:hover {
+    background: #193354;
+    border-color: #438cf0;
+}
+
+form.mt2-logout-form button.mt2-logout-button:focus-visible {
+    outline: 2px solid #60a5fa;
+    outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+    .mt2-logout-text {
+        display: none;
+    }
+}
+
+/* =========================================
+   MT 2.0 - BOTÓN CERRAR SESIÓN
+   ========================================= */
+
+.top form.mt2-logout-form {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+}
+
+.top form.mt2-logout-form > button.mt2-logout-button {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    width: auto;
+    min-width: max-content;
+    height: 40px;
+    padding: 0 14px;
+    margin: 0;
+
+    background-color: #10213a;
+    border: 1px solid #28415f;
+    border-radius: 10px;
+
+    color: #e2e8f0;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+
+    cursor: pointer;
+    transition: background-color .2s, border-color .2s;
+}
+
+.top form.mt2-logout-form > button.mt2-logout-button:hover {
+    background-color: #193354;
+    border-color: #438cf0;
+    color: #fff;
+}
+
+.top form.mt2-logout-form > button.mt2-logout-button:focus-visible {
+    outline: 2px solid #60a5fa;
+    outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+    .top form.mt2-logout-form > button.mt2-logout-button {
+        min-width: 40px;
+        width: 40px;
+        padding: 0;
+    }
+
+    .top .mt2-logout-text {
+        display: none;
+    }
+}
+
+
+/* MT 2.0 - Acceso a Mi cuenta */
+
+.top a.mt2-account-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 42px;
+    padding: 4px 10px 4px 4px;
+
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 12px;
+
+    color: #e2e8f0;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+
+    white-space: nowrap;
+    transition: background .2s, border-color .2s;
+}
+
+.top a.mt2-account-link:hover {
+    background: #14243d;
+    border-color: #28415f;
+    color: #fff;
+    text-decoration: none;
+}
+
+.top a.mt2-account-link:focus-visible {
+    outline: 2px solid #60a5fa;
+    outline-offset: 2px;
+}
+
+.mt2-account-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+
+    background: #2563c9;
+    color: #fff;
+    border-radius: 50%;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.mt2-account-label {
+    color: inherit;
+}
+
+.mt2-account-chevron {
+    color: #91a9cc;
+    font-size: 17px;
+}
+
+@media (max-width: 600px) {
+    .mt2-account-link {
+        gap: 6px;
+    }
+
+    .mt2-account-label,
+    .mt2-account-chevron {
+        display: none;
+    }
+}
+
+
+/* Mi cuenta - encabezado MT 2.0 */
+
+.top a.mt2-account-link,
+.top a.mt2-account-link:link,
+.top a.mt2-account-link:visited {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 10px;
+    min-height: 42px;
+    padding: 3px 10px 3px 3px;
+
+    color: #e2e8f0 !important;
+    text-decoration: none !important;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.top a.mt2-account-link:hover {
+    background: #14243d;
+    border-color: #28415f;
+}
+
+.top a.mt2-account-link .mt2-account-avatar {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+
+    border-radius: 50%;
+    background: #2563c9;
+    color: #ffffff !important;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.top a.mt2-account-link .mt2-account-label {
+    color: #e2e8f0 !important;
+    text-decoration: none !important;
+}
+
+.top a.mt2-account-link .mt2-account-chevron {
+    color: #91a9cc !important;
+    font-size: 18px;
+    text-decoration: none !important;
+}
+
+@media (max-width: 600px) {
+    .top a.mt2-account-link .mt2-account-label,
+    .top a.mt2-account-link .mt2-account-chevron {
+        display: none;
+    }
+}
+
+
+/* ==========================================
+   MT 2.0 - TEMA CLARO
+   ========================================== */
+
+/* Mi cuenta */
+body.light .top a.mt2-account-link,
+body.light .top a.mt2-account-link:link,
+body.light .top a.mt2-account-link:visited,
+body.light .top a.mt2-account-link .mt2-account-label {
+    color: #15304f !important;
+    text-decoration: none !important;
+}
+
+body.light .top a.mt2-account-link:hover {
+    background-color: #edf4ff;
+    border-color: #d4e0ef;
+}
+
+body.light .top a.mt2-account-link .mt2-account-chevron {
+    color: #647b9b !important;
+}
+
+/* Botón cerrar sesión */
+body.light .top form.mt2-logout-form > button.mt2-logout-button {
+    background-color: #ffffff;
+    color: #15304f;
+    border-color: #d4e0ef;
+}
+
+body.light .top form.mt2-logout-form > button.mt2-logout-button:hover {
+    background-color: #edf4ff;
+    border-color: #438cf0;
+}
+
+/* Indicadores destacados */
+body.light .card.kpi.primary {
+    background: linear-gradient(
+        135deg,
+        #eaf3ff 0%,
+        #dbeaff 100%
+    ) !important;
+
+    border-color: #b9d5fa;
+    color: #15304f;
+}
+
+/* Textos de la tarjeta */
+body.light .card.kpi.primary .label,
+body.light .card.kpi.primary .amount,
+body.light .card.kpi.primary .desc {
+    color: #15304f !important;
+}
+
+/* Iconos de indicadores */
+body.light .card.kpi .ico {
+    color: #ffffff;
+}
+
+body.light .card.kpi .ico img {
+    filter: brightness(0) invert(1);
+}
+
+/* Textos secundarios */
+body.light .mt2-budget-summary span,
+body.light .mt2-budget-item-head small,
+body.light .mt2-budget-item-footer {
+    color: #617895;
+}

@@ -1,0 +1,923 @@
+.finance-content {
+    min-height: calc(100vh - 72px)
+}
+
+.finance-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap
+}
+
+.finance-head h1 {
+    margin: 0 0 8px
+}
+
+.finance-card {
+    padding: 24px
+}
+
+.finance-filters {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 14px
+}
+
+.finance-head .finance-filters {
+    margin: 0
+}
+
+.finance-filters input,
+.finance-filters select,
+.finance-form input,
+.finance-form select {
+    background: var(--pane2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    padding: 12px;
+    min-width: 0;
+    font: inherit
+}
+
+.finance-filters input {
+    flex: 1
+}
+
+.action {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    background: var(--pane2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 9px 13px;
+    color: var(--text);
+    text-decoration: none;
+    cursor: pointer;
+    font: inherit;
+    white-space: nowrap
+}
+
+.action:hover {
+    border-color: var(--blue)
+}
+
+.primary-action {
+    background: #2469d5;
+    color: white;
+    border-color: #2469d5
+}
+
+.danger {
+    color: var(--red)
+}
+
+.finance-table {
+    font-size: 13px;
+    min-width: 620px
+}
+
+.finance-table th,
+.finance-table td {
+    padding: 14px 12px
+}
+
+.finance-table th:last-child,
+.finance-table td:last-child {
+    text-align: left
+}
+
+.finance-table .money {
+    font-weight: 750
+}
+
+.table-scroll {
+    overflow-x: auto
+}
+
+.actions {
+    display: flex;
+    gap: 6px
+}
+
+.actions form {
+    display: inline-flex
+}
+
+.finance-pill {
+    display: inline-flex;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 5px 9px;
+    color: var(--muted)
+}
+
+.finance-pill.save {
+    color: var(--green)
+}
+
+.finance-form {
+    max-width: 670px
+}
+
+.finance-form form {
+    display: grid;
+    gap: 18px
+}
+
+.finance-form label {
+    display: grid;
+    gap: 7px;
+    color: var(--muted)
+}
+
+.finance-form input,
+.finance-form select {
+    width: 100%
+}
+
+.finance-actions {
+    display: flex;
+    gap: 10px
+}
+
+.flash {
+    border: 1px solid var(--green);
+    padding: 12px;
+    border-radius: 9px;
+    margin: 12px 0;
+    color: var(--green)
+}
+
+.flash.error {
+    border-color: var(--red);
+    color: var(--red)
+}
+
+.finance-pages {
+    margin-top: 18px
+}
+
+.finance-pages nav {
+    display: block
+}
+
+.finance-pages a {
+    color: var(--blue)
+}
+
+@media(max-width:600px) {
+    .finance-card {
+        padding: 15px
+    }
+
+    .finance-filters {
+        align-items: stretch
+    }
+
+    .finance-filters>* {
+        flex: 1 1 100%
+    }
+
+    .finance-head>.action {
+        width: 100%
+    }
+}
+.mt2-activate {
+    background: rgba(16, 185, 129, 0.12);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    border-radius: 9px;
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.mt2-activate:hover {
+    background: rgba(16, 185, 129, 0.22);
+}
+/* Contenedor adaptable de filtros */
+.mt2-filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    align-items: end;
+    margin-bottom: 24px;
+}
+
+.mt2-filters > * {
+    min-width: 0;
+}
+
+.mt2-filters input,
+.mt2-filters select {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* Campos que ocupan la fila completa */
+.mt2-filter-full {
+    grid-column: 1 / -1;
+}
+
+/* Evitar recortar las acciones de la tabla */
+.mt2-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Móviles */
+@media (max-width: 767px) {
+    .mt2-filters {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* MT 2.0 - Filtros financieros */
+
+.mt2-finance-filters {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 18px !important;
+    margin-bottom: 26px;
+}
+
+.mt2-filter-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 16px;
+    width: 100%;
+}
+
+.mt2-filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.mt2-filter-field label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted, #94a3b8);
+}
+
+.mt2-finance-filters input,
+.mt2-finance-filters select {
+    display: block;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-height: 44px;
+    padding: 10px 12px;
+    font: inherit;
+    color: var(--text, #f8fafc);
+    background: var(--pane2, #12243f);
+    border: 1px solid var(--border, #263b56);
+    border-radius: 10px;
+    color-scheme: dark;
+}
+
+body.light .mt2-finance-filters input,
+body.light .mt2-finance-filters select {
+    color-scheme: light;
+}
+
+.mt2-period-section {
+    display: grid;
+    grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+    gap: 16px;
+    align-items: end;
+    width: 100%;
+}
+
+.mt2-period-fields {
+    min-width: 0;
+}
+
+.mt2-date-range {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.mt2-period-fields[hidden] {
+    display: none !important;
+}
+
+.mt2-filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+}
+
+.mt2-filter-actions .action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 10px 20px;
+    white-space: nowrap;
+}
+
+/* Tabla y acciones */
+.mt2-table-scroll {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.mt2-table-scroll .finance-table {
+    width: 100%;
+    min-width: 690px;
+}
+
+.mt2-row-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.mt2-row-actions form {
+    display: inline-flex;
+    margin: 0;
+}
+
+.mt2-row-actions button {
+    white-space: nowrap;
+}
+
+/* Tablet */
+@media (max-width: 991px) {
+    .mt2-filter-main {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Celulares */
+@media (max-width: 767px) {
+    .mt2-period-section,
+    .mt2-date-range {
+        grid-template-columns: 1fr;
+    }
+
+    .mt2-filter-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mt2-filter-actions .action {
+        width: 100%;
+    }
+}
+
+.mt2-month-selectors {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+}
+
+@media (max-width: 480px) {
+    .mt2-month-selectors {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =====================================
+   MT 2.0 - Filtro mensual de reportes
+   ===================================== */
+
+.finance-head .finance-filters {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 12px;
+    width: auto;
+    max-width: 100%;
+}
+
+.finance-head .report-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    flex: 0 0 auto;
+    min-width: 0;
+}
+
+.finance-head .report-filter-group label {
+    font-size: 13px;
+    color: var(--muted, #94a3b8);
+}
+
+.finance-head .report-filter-group select {
+    display: block;
+    width: 120px;
+    height: 44px;
+    min-width: 0;
+    padding: 0 12px;
+
+    background: var(--pane2, #12243f);
+    color: var(--text, #f8fafc);
+    border: 1px solid var(--border, #263b56);
+    border-radius: 10px;
+
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    color-scheme: dark;
+}
+
+.finance-head .report-filter-group:nth-child(2) select {
+    width: 170px;
+}
+
+body.light .finance-head .report-filter-group select {
+    color-scheme: light;
+}
+
+.finance-head .finance-filters > button {
+    height: 44px;
+    min-height: 44px;
+    width: auto;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+/* Tablet y celular */
+@media (max-width: 991px) {
+    .finance-head {
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .finance-head .finance-filters {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .finance-head .finance-filters {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .finance-head .report-filter-group select,
+    .finance-head .report-filter-group:nth-child(2) select {
+        width: 100%;
+    }
+
+    .finance-head .finance-filters > button {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+}
+
+/* Presupuestos - vigencia mensual */
+
+.mt2-budget-period {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 8px;
+    padding: 20px;
+    border: 1px solid var(--border, #263b56);
+    border-radius: 12px;
+    background: rgba(59, 130, 246, 0.04);
+}
+
+.mt2-budget-period-title strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.mt2-budget-period-title .sub {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.mt2-budget-period-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.mt2-budget-period-fields label {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.mt2-budget-period-fields select {
+    width: 100%;
+    min-width: 0;
+}
+
+@media (max-width: 480px) {
+    .mt2-budget-period {
+        padding: 16px;
+    }
+
+    .mt2-budget-period-fields {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
+/* =========================================
+   MT 2.0 - FILTROS DE USUARIOS
+   ========================================= */
+
+.finance-card form.mt2-users-filters {
+    display: grid;
+    grid-template-columns:
+        minmax(220px, 1fr)
+        minmax(150px, 190px)
+        minmax(150px, 190px)
+        auto
+        auto;
+    align-items: end;
+    gap: 12px;
+    width: 100%;
+    margin: 0 0 24px;
+}
+
+.finance-card form.mt2-users-filters input,
+.finance-card form.mt2-users-filters select {
+    appearance: auto;
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 44px;
+    box-sizing: border-box;
+
+    padding: 0 14px;
+    margin: 0;
+
+    background-color: #10213a;
+    border: 1px solid #28415f;
+    border-radius: 10px;
+
+    color: #e2e8f0;
+    font-family: inherit;
+    font-size: 14px;
+    color-scheme: dark;
+}
+
+.finance-card form.mt2-users-filters input::placeholder {
+    color: #8ea4c4;
+}
+
+.finance-card form.mt2-users-filters select option {
+    background-color: #10213a;
+    color: #e2e8f0;
+}
+
+.finance-card form.mt2-users-filters input:focus,
+.finance-card form.mt2-users-filters select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, .12);
+}
+
+.finance-card form.mt2-users-filters .action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    min-height: 44px;
+    margin: 0;
+    padding: 0 18px;
+    white-space: nowrap;
+}
+
+/* Tablets */
+@media (max-width: 1100px) {
+    .finance-card form.mt2-users-filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .finance-card form.mt2-users-filters input {
+        grid-column: 1 / -1;
+    }
+}
+
+/* Celulares */
+@media (max-width: 600px) {
+    .finance-card form.mt2-users-filters {
+        grid-template-columns: 1fr;
+    }
+
+    .finance-card form.mt2-users-filters input {
+        grid-column: auto;
+    }
+
+    .finance-card form.mt2-users-filters .action {
+        width: 100%;
+    }
+}
+
+/* MT 2.0 - Acciones del listado de usuarios */
+
+/* Acciones de usuarios en una misma fila */
+
+.mt2-user-actions.actions-stack {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    gap: 12px;
+}
+
+.mt2-user-actions.actions-stack form {
+    display: inline-flex;
+    margin: 0;
+    padding: 0;
+}
+
+.mt2-user-actions.actions-stack .action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 105px;
+    min-height: 36px;
+    margin: 0;
+    padding: 8px 12px;
+    white-space: nowrap;
+}
+
+/* Mi cuenta */
+
+.mt2-profile-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 20px;
+}
+
+.mt2-profile-grid .finance-card {
+    margin: 0;
+}
+
+.mt2-profile-details {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 18px 0;
+}
+
+.mt2-profile-details > div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px;
+    background: rgba(59,130,246,.06);
+    border: 1px solid rgba(100,140,200,.18);
+    border-radius: 10px;
+}
+
+.mt2-profile-details span {
+    color: #91a9cc;
+    font-size: 12px;
+}
+
+.mt2-profile-details strong {
+    font-size: 14px;
+}
+
+@media (max-width: 900px) {
+    .mt2-profile-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* MT 2.0 - Configuración */
+
+.mt2-settings-card {
+    max-width: 820px;
+}
+
+.mt2-settings-card h2 {
+    margin-bottom: 8px;
+}
+
+.mt2-settings-card form {
+    margin-top: 24px;
+}
+
+.mt2-settings-card form > label {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-bottom: 10px;
+}
+
+.mt2-settings-card form > label select {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 14px;
+    background-color: #10213a;
+    border: 1px solid #28415f;
+    border-radius: 10px;
+    color: #e2e8f0;
+    font: inherit;
+    font-size: 14px;
+    color-scheme: dark;
+}
+
+.mt2-settings-card form > label select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+}
+
+.mt2-settings-card form > p.sub {
+    margin: 0 0 22px;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+
+/* ==========================================
+   MT 2.0 - CORRECCIONES DEL TEMA CLARO
+   ========================================== */
+
+/* Filtros del módulo Usuarios */
+body.light .finance-card form.mt2-users-filters input,
+body.light .finance-card form.mt2-users-filters select {
+    background-color: #ffffff;
+    color: #142b49;
+    border: 1px solid #d4e0ef;
+    color-scheme: light;
+}
+
+body.light .finance-card form.mt2-users-filters input::placeholder {
+    color: #7186a4;
+}
+
+body.light .finance-card form.mt2-users-filters select option {
+    background-color: #ffffff;
+    color: #142b49;
+}
+
+/* Configuración */
+body.light .mt2-settings-card form > label select {
+    background-color: #ffffff;
+    color: #142b49;
+    border: 1px solid #d4e0ef;
+    color-scheme: light;
+}
+
+/* Filtros de Reportes */
+body.light .finance-head .report-filter-group select {
+    background-color: #ffffff;
+    color: #142b49;
+    border: 1px solid #d4e0ef;
+    color-scheme: light;
+}
+
+/* Vigencias de presupuestos */
+body.light .mt2-budget-period {
+    background: #f6f9fe;
+    border-color: #d4e0ef;
+}
+
+body.light .mt2-budget-period-fields select {
+    background-color: #ffffff;
+    color: #142b49;
+    border-color: #d4e0ef;
+    color-scheme: light;
+}
+
+/* Campos de formularios */
+body.light .finance-form input,
+body.light .finance-form select,
+body.light .finance-form textarea {
+    background-color: #ffffff;
+    color: #142b49;
+    border-color: #d4e0ef;
+    color-scheme: light;
+}
+
+body.light .finance-form input:focus,
+body.light .finance-form select:focus,
+body.light .mt2-settings-card select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, .12);
+}
+
+
+/* ======================================
+   MT 2.0 - PAGINACIÓN PERSONALIZADA
+   ====================================== */
+
+.mt2-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 20px 0 4px;
+}
+
+.mt2-pagination-info {
+    font-size: 13px;
+    color: #91a9cc;
+}
+
+.mt2-pagination-links {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.mt2-page {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid #28415f;
+    border-radius: 9px;
+    background: #14243d;
+    color: #cbd9ed;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+a.mt2-page:hover {
+    background: #213e65;
+    color: #ffffff;
+    border-color: #3b82f6;
+    text-decoration: none;
+}
+
+.mt2-page.active {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+}
+
+.mt2-page.disabled {
+    opacity: .4;
+    cursor: default;
+}
+
+/* Tema claro */
+
+body.light .mt2-pagination-info {
+    color: #617895;
+}
+
+body.light .mt2-page {
+    background: #ffffff;
+    color: #15304f;
+    border-color: #d4e0ef;
+}
+
+body.light a.mt2-page:hover {
+    background: #edf4ff;
+    border-color: #3b82f6;
+}
+
+body.light .mt2-page.active {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+}
+
+@media (max-width: 600px) {
+    .mt2-pagination {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
