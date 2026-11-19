@@ -66,6 +66,7 @@ function createIncome(User $user, float $amount, string $createdAt, string $desc
     return DB::table('ingreso')->insertGetId([
         'description' => $description,
         'amount' => $amount,
+        'date' => substr($createdAt, 0, 10),
         'estado' => true,
         'user_id' => $user->id,
         'created_at' => $createdAt,

@@ -9,6 +9,7 @@ class IncomeRequest extends FinanceRecordRequest
         return [
             'description' => $this->descriptionRules(),
             'amount' => $this->amountRules(),
+            'date' => ['required', 'date_format:Y-m-d'],
         ];
     }
 }

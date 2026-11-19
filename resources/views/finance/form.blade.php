@@ -78,7 +78,7 @@
             </label>
         @endif
 
-        @if($modulo === 'gastos')
+        @if(in_array($modulo, ['gastos', 'ingresos']))
             <label>
                 Fecha de movimiento
                 <input
@@ -87,7 +87,9 @@
                     required
                     value="{{ old('date', $item->date ?? now()->toDateString()) }}">
             </label>
+        @endif
 
+        @if($modulo === 'gastos')
             <label>
                 Clasificación
                 <select name="save" required>

@@ -13,19 +13,17 @@ class Income extends Model
 
     protected $table = 'ingreso';
 
-    protected $fillable = ['description', 'amount'];
+    protected $fillable = ['description', 'amount', 'date'];
 
+    // `date` se deja como texto (Y-m-d): así lo esperan los formularios.
     protected $casts = [
         'amount' => 'decimal:2',
     ];
 
-    /**
-     * Los ingresos aún no tienen fecha propia: el periodo se calcula con
-     * created_at. Rango semiabierto [desde, hasta).
-     */
+    /** Rango semiabierto [desde, hasta) sobre la fecha del ingreso. */
     public function scopeInPeriod(Builder $query, CarbonInterface $from, CarbonInterface $until): void
     {
-        $query->where($query->qualifyColumn('created_at'), '>=', $from)
-            ->where($query->qualifyColumn('created_at'), '<', $until);
+        $query->where($query->qualifyColumn('date'), '>=', $from->toDateString())
+            ->where($query->qualifyColumn('date'), '<', $until->toDateString());
     }
 }

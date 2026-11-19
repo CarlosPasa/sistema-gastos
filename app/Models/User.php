@@ -84,4 +84,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Budget::class);
     }
+
+    /** @return HasMany<StatementImport, $this> */
+    public function statementImports(): HasMany
+    {
+        return $this->hasMany(StatementImport::class);
+    }
 }
