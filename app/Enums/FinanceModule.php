@@ -73,7 +73,7 @@ enum FinanceModule: string
     /** Columna por la que se ordena el listado (más reciente primero). */
     public function sortColumn(): string
     {
-        return $this === self::Expenses ? 'date' : 'created_at';
+        return in_array($this, [self::Expenses, self::Incomes], true) ? 'date' : 'created_at';
     }
 
     public function usesCategories(): bool

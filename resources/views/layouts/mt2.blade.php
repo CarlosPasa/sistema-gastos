@@ -98,6 +98,17 @@
                 <span class="nav-label">Reportes</span>
             </a>
 
+            {{-- Importar extracto --}}
+            <a href="{{ route('mt2.imports.index') }}"
+            class="{{ request()->is('mt2/importar*') ? 'current' : '' }}"
+            @if(request()->is('mt2/importar*')) aria-current="page" @endif>
+                <span class="symbol">
+                    <img class="duotone-icon"
+                        src="{{ asset('mt2/icons/reportes.svg') }}" alt="">
+                </span>
+                <span class="nav-label">Importar</span>
+            </a>
+
             {{-- Usuarios --}}
             @auth
                 @if(auth()->user()->isAdmin())

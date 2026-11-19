@@ -115,7 +115,7 @@ it('actualiza una categoría y un ingreso', function () {
 
     $this->put("/mt2/categorias/{$this->category}", ['description' => 'Servicios básicos'])
         ->assertRedirect(route('mt2.finance.index', 'categorias'));
-    $this->put("/mt2/ingresos/{$income}", ['description' => 'Sueldo', 'amount' => '4200.00'])
+    $this->put("/mt2/ingresos/{$income}", ['description' => 'Sueldo', 'amount' => '4200.00', 'date' => '2026-11-01'])
         ->assertRedirect(route('mt2.finance.index', 'ingresos'));
 
     expect(DB::table('categoria')->find($this->category)->description)->toBe('Servicios básicos')

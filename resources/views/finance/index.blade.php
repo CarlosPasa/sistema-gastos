@@ -256,7 +256,7 @@
                         </td>
 
                         <td>
-                            {{ $modulo === 'gastos'
+                            {{ in_array($modulo, ['gastos', 'ingresos'])
                                 ? $row->date
                                 : substr((string) $row->created_at, 0, 10) }}
                         </td>

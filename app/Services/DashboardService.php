@@ -68,7 +68,7 @@ class DashboardService
 
         $incomes = $user->incomes()->active()->inPeriod($from, $until)
             ->toBase()
-            ->selectRaw("to_char(created_at, 'YYYY-MM') AS period, SUM(amount) AS total")
+            ->selectRaw("to_char(date, 'YYYY-MM') AS period, SUM(amount) AS total")
             ->groupBy('period')
             ->pluck('total', 'period');
 
@@ -129,14 +129,14 @@ class DashboardService
             ]);
 
         $incomes = $user->incomes()->active()->inPeriod($from, $until)
-            ->orderByDesc('created_at')
+            ->orderByDesc('date')
             ->limit(self::LATEST_MOVEMENTS)
             ->toBase()
-            ->get(['description', 'amount', 'created_at'])
+            ->get(['description', 'amount', 'date'])
             ->map(fn ($row) => [
                 'description' => $row->description,
                 'amount' => (float) $row->amount,
-                'date' => $row->created_at,
+                'date' => $row->date,
                 'type' => 'Ingreso',
             ]);
 

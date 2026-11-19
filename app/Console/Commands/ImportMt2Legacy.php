@@ -256,6 +256,7 @@ class ImportMt2Legacy extends Command
                     $newId = (int)DB::table('ingreso')->insertGetId([
                         'description' => $row['description'],
                         'amount' => $row['amount'],
+                        'date' => \Carbon\Carbon::parse($row['created_at'])->toDateString(),
                         'estado' => (bool)$row['estado'],
                         'user_id' => $userId,
                         'created_at' => $row['created_at'],

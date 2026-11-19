@@ -69,3 +69,4 @@ Route::middleware(['auth', 'active.user'])
 require __DIR__.'/mt2-dashboard.php';
 require __DIR__.'/mt2-finance.php';
 require __DIR__.'/mt2-users.php';
+require __DIR__.'/mt2-imports.php';

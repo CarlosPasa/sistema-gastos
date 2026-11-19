@@ -7,6 +7,8 @@ use App\Models\Category;
 use App\Models\Expense;
 use App\Models\Income;
 use App\Policies\FinanceRecordPolicy;
+use App\Statements\GenericCsvParser;
+use App\Statements\StatementParser;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -18,7 +20,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Formato de extracto por defecto. Para soportar el CSV propio de un
+        // banco, se crea otra implementación de StatementParser.
+        $this->app->bind(StatementParser::class, GenericCsvParser::class);
     }
 
     /**
