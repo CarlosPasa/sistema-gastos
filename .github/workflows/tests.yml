@@ -18,14 +18,14 @@ permissions:
 
 jobs:
   pest:
-    name: Pest (PHP 8.3 + PostgreSQL 17)
+    name: Pest (PHP 8.3 + PostgreSQL 18)
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
     # La misma base que usas en Docker y en Render.
     services:
       postgres:
-        image: postgres:17-alpine
+        image: postgres:18-alpine
         env:
           POSTGRES_DB: mt2_testing
           POSTGRES_USER: mt2_user
