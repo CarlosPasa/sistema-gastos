@@ -18,7 +18,13 @@
         </include>
     </source>
     <php>
-        <env name="APP_ENV" value="testing"/>
+        <!--
+            Docker (compose.yaml) define APP_ENV=local en el contenedor y esa
+            variable gana sobre <env>. Sin "testing", Laravel activa la
+            verificación CSRF y todos los POST/PUT/DELETE responden 419.
+        -->
+        <server name="APP_ENV" value="testing" force="true"/>
+        <env name="APP_ENV" value="testing" force="true"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
