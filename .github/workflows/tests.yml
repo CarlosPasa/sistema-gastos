@@ -1,0 +1,81 @@
+name: Tests
+
+# Corre en cada push a main y en cada pull request.
+# Render está configurado con "Auto-Deploy: After CI Checks Pass":
+# solo despliega el commit si este workflow termina en verde.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Si haces dos push seguidos, cancela la ejecución anterior.
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  pest:
+    name: Pest (PHP 8.3 + PostgreSQL 17)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    # La misma base que usas en Docker y en Render.
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: mt2_testing
+          POSTGRES_USER: mt2_user
+          POSTGRES_PASSWORD: ci_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U mt2_user -d mt2_testing"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    # phpunit.xml ya fuerza DB_DATABASE=mt2_testing y APP_ENV=testing.
+    # Aquí solo indicamos dónde está el PostgreSQL del workflow.
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_USERNAME: mt2_user
+      DB_PASSWORD: ci_password
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v5
+
+      - name: Instalar PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_pgsql, pgsql, bcmath, mbstring, zip
+          coverage: none
+          tools: composer:v2
+
+      - name: Ubicar la caché de Composer
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Reutilizar dependencias descargadas
+        uses: actions/cache@v5
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-
+
+      - name: Instalar dependencias
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Preparar .env de CI
+        run: |
+          cp .env.example .env
+          php artisan key:generate --ansi
+
+      - name: Ejecutar pruebas
+        run: php artisan test
