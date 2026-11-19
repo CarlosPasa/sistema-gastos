@@ -6,7 +6,7 @@ Aplicación web para registrar ingresos, gastos y ahorros, controlar
 presupuestos mensuales por categoría e importar extractos bancarios. La uso
 para mis propias finanzas; está desplegada en Render con PostgreSQL.
 
-**Stack:** PHP 8.3 · Laravel 12 · PostgreSQL 17 · Blade · Pest · Docker
+**Stack:** PHP 8.3 · Laravel 12 · PostgreSQL 18 · Blade · Pest · Docker
 (Nginx + PHP-FPM + worker de colas con Supervisor) · GitHub Actions · Render
 
 ---
