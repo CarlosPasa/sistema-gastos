@@ -26,3 +26,8 @@ Thumbs.db
 /storage/app/imports/
 /vendor/
 /node_modules/
+
+# Respaldos y archivos de ejecución: nunca al repositorio
+*.dump
+*.sql
+supervisord.pid

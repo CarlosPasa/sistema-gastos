@@ -36,41 +36,6 @@ Route::middleware('auth')->group(function () {
     })->name('dashboard');
 });
 
-Route::get('/test-session', function (\Illuminate\Http\Request $request) {
-    $visitas = $request->session()->get('visitas_mt2', 0) + 1;
-
-    $request->session()->put('visitas_mt2', $visitas);
-
-    return response()->json([
-        'visitas' => $visitas,
-        'autenticado' => auth()->check(),
-        'host' => $request->getHost(),
-        'scheme' => $request->getScheme(),
-        'cookie_name' => config('session.cookie'),
-        'cookie_received' => $request->hasCookie(config('session.cookie')),
-    ]);
-});
-
-Route::get('/test-headers', function () {
-    return response()->json([
-        'ok' => true,
-    ])->header('X-MT2-Test', 'funciona');
-});
-
-Route::get('/test-output', function () {
-    $file = '';
-    $line = 0;
-
-    $sent = headers_sent($file, $line);
-
-    return response()->json([
-        'headers_sent' => $sent,
-        'file' => $sent ? $file : null,
-        'line' => $sent ? $line : null,
-        'output_buffer_level' => ob_get_level(),
-    ]);
-});
-
 Route::middleware(['auth', 'active.user'])
     ->prefix('mt2')
     ->name('mt2.profile.')
@@ -86,7 +51,6 @@ Route::middleware(['auth', 'active.user'])
             ->name('password');
     });
 
-
 Route::middleware(['auth', 'active.user'])
     ->prefix('mt2')
     ->name('mt2.settings.')
@@ -98,8 +62,8 @@ Route::middleware(['auth', 'active.user'])
         Route::put('/configuracion', [SettingsController::class, 'update'])
             ->name('update');
 
-        Route::patch('/configuracion/tema',[SettingsController::class, 'updateTheme']
-            )->name('theme');
+        Route::patch('/configuracion/tema', [SettingsController::class, 'updateTheme']
+        )->name('theme');
     });
 
 require __DIR__.'/mt2-dashboard.php';

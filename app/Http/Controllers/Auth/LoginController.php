@@ -14,7 +14,6 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
-
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -24,22 +23,16 @@ class LoginController extends Controller
 
         $credentials['is_active'] = true;
 
-        if (!Auth::attempt($credentials)) {
+        if (! Auth::attempt($credentials)) {
             throw ValidationException::withMessages([
                 'email' => 'Credenciales incorrectas o cuenta inactiva.',
             ]);
         }
 
         $request->session()->regenerate();
-        \Log::info('MT2 LOGIN DEBUG', [
-            'user_id' => auth()->id(),
-            'authenticated' => auth()->check(),
-            'session_id' => $request->session()->getId(),
-        ]);
 
         return redirect()->route('dashboard');
     }
-
 
     public function logout(Request $request)
     {
