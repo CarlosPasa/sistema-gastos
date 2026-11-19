@@ -2,312 +2,235 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
-use Carbon\Carbon;
+use App\Enums\FinanceModule;
+use App\Models\Budget;
+use App\Models\Category;
 use App\Services\BudgetRecurrenceService;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\View\View;
 
+/**
+ * Pantallas de listado y formulario compartidas por categorías, gastos,
+ * ingresos y presupuestos.
+ *
+ * - Qué módulo es: FinanceModule (enum resuelto desde la URL).
+ * - Validación: un Form Request por módulo (App\Http\Requests\Finance).
+ * - Quién puede tocar un registro: FinanceRecordPolicy (404 si no es tuyo).
+ * - Reglas de presupuestos: BudgetRecurrenceService.
+ */
 class FinanceController extends Controller
 {
-    private const MODULES = [
-        'categorias' => ['table' => 'categoria', 'title' => 'Categorías', 'icon' => 'categorias', 'fields' => ['description']],
-        'gastos' => ['table' => 'gasto', 'title' => 'Gastos y ahorros', 'icon' => 'gastos', 'fields' => ['description', 'amount', 'date', 'id_category', 'save']],
-        'ingresos' => ['table' => 'ingreso', 'title' => 'Ingresos', 'icon' => 'ingresos', 'fields' => ['description', 'amount']],
-        'presupuestos' => ['table' => 'presupuesto', 'title' => 'Presupuestos', 'icon' => 'presupuestos', 'fields' => ['description', 'amount', 'id_category']],
-    ];
-    private function config(string $modulo): array
+    private const PER_PAGE = 12;
+
+    public function __construct(private readonly BudgetRecurrenceService $budgets) {}
+
+    public function index(Request $request, FinanceModule $modulo): View
     {
-        abort_unless(isset(self::MODULES[$modulo]), 404);
-        return self::MODULES[$modulo];
-    }
-    private function base(string $modulo)
-    {
-        return DB::table($this->config($modulo)['table'])->where('user_id', auth()->id());
-    }
-    private function row(string $modulo, int $id)
-    {
-        return $this->base($modulo)->where('id', $id)->firstOrFail();
-    }
-    private function categories()
-    {
-        return DB::table('categoria')->where('user_id', auth()->id())->where('estado', true)->orderBy('description')->get(['id', 'description']);
-    }
-    public function index(Request $request, string $modulo)
-    {
-        $config = $this->config($modulo);
-        $query = $this->base($modulo);
-        if ($request->filled('q')) {
-            $q = mb_substr($request->input('q'), 0, 100);
-            $query->where('description', 'ilike', '%' . str_replace(['%', '_'], ['\\%', '\\_'], $q) . '%');
+        $query = $this->ownedRecords($request, $modulo)->search($request->input('q'));
+
+        if ($modulo === FinanceModule::Expenses) {
+            $this->applyExpenseFilters($request, $query);
         }
-        if ($modulo === 'gastos' && in_array($request->input('tipo'), ['ahorro', 'consumo'], true)) $query->where('save', $request->input('tipo') === 'ahorro');
-        if ($modulo === 'gastos') {
-            $mes = $request->input('mes');
-            $desde = $request->input('desde');
-            $hasta = $request->input('hasta');
 
-            if ($request->filled('desde') || $request->filled('hasta')) {
-
-                $request->validate([
-                    'desde' => ['required', 'date_format:Y-m-d'],
-                    'hasta' => [
-                        'required',
-                        'date_format:Y-m-d',
-                        'after_or_equal:desde'
-                    ],
-                ]);
-
-                $query->whereBetween('date', [$desde, $hasta]);
-
-            } elseif ($request->filled('mes')) {
-
-                $request->validate([
-                    'mes' => ['required', 'date_format:Y-m'],
-                ]);
-
-                $start = Carbon::createFromFormat('!Y-m', $mes)
-                    ->startOfMonth();
-
-                $query->whereBetween('date', [
-                    $start->toDateString(),
-                    $start->copy()->endOfMonth()->toDateString(),
-                ]);
-            }
-        }
         $rows = $query
-            ->orderByDesc($modulo === 'gastos' ? 'date' : 'created_at')
+            ->orderByDesc($modulo->sortColumn())
             ->orderByDesc('id')
-            ->paginate(12)
-            ->withQueryString();
+            ->paginate(self::PER_PAGE)
+            ->withQueryString()
+            ->withPath(rtrim(config('app.url'), '/').$request->getPathInfo());
 
-        $rows->withPath(
-            rtrim(config('app.url'), '/') . $request->getPathInfo()
-        );
-        $names = $this->categories()->pluck('description', 'id');
-        return view('finance.index', compact('modulo', 'config', 'rows', 'names'));
+        return view('finance.index', [
+            'modulo' => $modulo->value,
+            'config' => $modulo->viewConfig(),
+            'rows' => $rows,
+            'names' => $this->activeCategories($request)->pluck('description', 'id'),
+        ]);
     }
-    public function create(string $modulo)
+
+    public function create(Request $request, FinanceModule $modulo): View
     {
-        $config = $this->config($modulo);
-        $item = null;
-        $categories = $this->categories();
-        return view('finance.form', compact('modulo', 'config', 'item', 'categories'));
+        return $this->form($request, $modulo, null);
     }
-    public function edit(string $modulo, int $id)
+
+    public function edit(Request $request, FinanceModule $modulo, int $id): View
     {
-        $config = $this->config($modulo);
-        $item = $this->row($modulo, $id);
-        $categories = $this->categories();
-        return view('finance.form', compact('modulo', 'config', 'item', 'categories'));
+        $record = $this->findRecord($modulo, $id);
+        Gate::authorize('view', $record);
+
+        return $this->form($request, $modulo, $record);
     }
-    private function validated(Request $request, string $modulo): array
+
+    public function store(Request $request, FinanceModule $modulo): RedirectResponse
     {
-        $rules = ['description' => ['required', 'string', 'max:100']];
-        if ($modulo !== 'categorias') $rules['amount'] = ['required', 'numeric', 'gt:0', 'max:999999999999.99', 'decimal:0,2'];
-        if ($modulo === 'gastos') {
-            $rules['date'] = ['required', 'date_format:Y-m-d'];
-            $rules['save'] = ['required', 'boolean'];
+        $data = $this->validated($modulo);
+
+        if ($modulo === FinanceModule::Budgets) {
+            $this->budgets->create($request->user(), $data);
+        } else {
+            $this->ownedRecords($request, $modulo)->create($data);
         }
-        if (in_array($modulo, ['gastos', 'presupuestos'])) $rules['id_category'] = ['required', 'integer', Rule::exists('categoria', 'id')->where('user_id', auth()->id())->where('estado', true)];
-        return $request->validate($rules);
-    }
-
-    public function store(
-        Request $request,
-        string $modulo,
-        BudgetRecurrenceService $budgets
-    ) {
-        $this->config($modulo);
-
-        $data = $this->validated($request, $modulo);
-
-        if ($modulo === 'presupuestos') {
-            $request->validate([
-                'effective_month' => ['required', 'date_format:Y-m'],
-            ]);
-        }
-
-        $effectiveMonth = $request->input('effective_month');
-
-        $data['estado'] = true;
-        $data['user_id'] = auth()->id();
-        $data['created_at'] = now();
-        $data['updated_at'] = now();
-
-        DB::transaction(function () use (
-            $modulo,
-            $data,
-            $effectiveMonth,
-            $budgets
-        ) {
-            $id = DB::table($this->config($modulo)['table'])
-                ->insertGetId($data);
-
-            if ($modulo === 'presupuestos') {
-                $budgets->initialize(
-                    (int) $id,
-                    (string) $data['amount'],
-                    $effectiveMonth
-                );
-            }
-        });
 
         return redirect()
-            ->route('mt2.finance.index', $modulo)
+            ->route('mt2.finance.index', $modulo->value)
             ->with('ok', 'Registro creado correctamente.');
     }
 
-    public function update(
-        Request $request,
-        string $modulo,
-        int $id,
-        BudgetRecurrenceService $budgets
-    ) {
-        $item = $this->row($modulo, $id);
-        $data = $this->validated($request, $modulo);
+    public function update(FinanceModule $modulo, int $id): RedirectResponse
+    {
+        $record = $this->findRecord($modulo, $id);
+        Gate::authorize('update', $record);
 
-        if ($modulo === 'presupuestos') {
-            $request->validate([
-                'effective_month' => ['required', 'date_format:Y-m'],
-            ]);
+        $data = $this->validated($modulo);
 
-            $effectiveMonth = $request->input('effective_month');
-
-            DB::transaction(function () use (
-                $id,
-                $data,
-                $effectiveMonth,
-                $budgets
-            ) {
-                $budgets->change(
-                    $id,
-                    (int) auth()->id(),
-                    (string) $data['amount'],
-                    $effectiveMonth
-                );
-
-                // El importe ya fue actualizado por el servicio.
-                unset($data['amount']);
-
-                $data['updated_at'] = now();
-
-                DB::table('presupuesto')
-                    ->where('user_id', auth()->id())
-                    ->where('id', $id)
-                    ->update($data);
-            });
+        if ($record instanceof Budget) {
+            $this->budgets->update($record, $data);
         } else {
-            $data['updated_at'] = now();
-
-            DB::table($this->config($modulo)['table'])
-                ->where('user_id', auth()->id())
-                ->where('id', $id)
-                ->update($data);
+            $record->update($data);
         }
 
         return redirect()
-            ->route('mt2.finance.index', $modulo)
+            ->route('mt2.finance.index', $modulo->value)
             ->with('ok', 'Registro actualizado.');
     }
 
-    public function destroy(string $modulo, int $id)
+    public function destroy(FinanceModule $modulo, int $id): RedirectResponse
     {
-        $this->row($modulo, $id);
-        if ($modulo === 'categorias') {
-            $used = DB::table('gasto')->where('user_id', auth()->id())->where('id_category', $id)->exists() || DB::table('presupuesto')->where('user_id', auth()->id())->where('id_category', $id)->exists();
-            if ($used) return back()->withErrors(['delete' => 'Esta categoría tiene gastos o presupuestos asociados y no se puede desactivar.']);
+        $record = $this->findRecord($modulo, $id);
+        Gate::authorize('delete', $record);
+
+        if ($record instanceof Category && $record->isInUse()) {
+            return back()->withErrors([
+                'delete' => 'Esta categoría tiene gastos o presupuestos asociados y no se puede desactivar.',
+            ]);
         }
-        DB::table($this->config($modulo)['table'])->where('user_id', auth()->id())->where('id', $id)->update(['estado' => false, 'updated_at' => now()]);
+
+        $record->deactivate();
+
         return back()->with('ok', 'Registro desactivado.');
     }
-    public function activate(string $modulo, int $id)
-    {
-        // Valida que el módulo exista y que el registro
-        // pertenezca al usuario autenticado.
-        $item = $this->row($modulo, $id);
 
-        if ($item->estado) {
+    public function activate(FinanceModule $modulo, int $id): RedirectResponse
+    {
+        $record = $this->findRecord($modulo, $id);
+        Gate::authorize('restore', $record);
+
+        if ($record->estado) {
             return back()->with('ok', 'El registro ya se encuentra activo.');
         }
 
-        $this->base($modulo)
-            ->where('id', $id)
-            ->update([
-                'estado' => true,
-                'updated_at' => now(),
-            ]);
+        $record->activate();
 
         return back()->with('ok', 'Registro activado correctamente.');
     }
 
-    public function report(Request $request)
+    public function report(Request $request): View
     {
         $month = $request->input('mes', now()->format('Y-m'));
 
-        if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $month)) {
+        if (! is_string($month) || ! preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $month)) {
             $month = now()->format('Y-m');
         }
 
-        $first = Carbon::createFromFormat('!Y-m', $month)
-            ->startOfMonth();
+        $from = Carbon::createFromFormat('!Y-m', $month)->startOfMonth();
+        $until = $from->copy()->addMonth();
+        $user = $request->user();
 
-        $last = $first->copy()->endOfMonth();
+        $expenses = $user->expenses()->active()->inPeriod($from, $until);
 
-        // Gastos y ahorros del usuario
-        $gasto = DB::table('gasto')
-            ->where('gasto.user_id', auth()->id())
-            ->where('gasto.estado', true)
-            ->whereBetween('gasto.date', [
-                $first->toDateString(),
-                $last->toDateString()
-            ]);
-
-        // Ingresos del usuario
-        // El límite superior es exclusivo para incluir
-        // todos los movimientos del último día del mes.
-        $income = DB::table('ingreso')
-            ->where('ingreso.user_id', auth()->id())
-            ->where('ingreso.estado', true)
-            ->where('ingreso.created_at', '>=', $first)
-            ->where('ingreso.created_at', '<', $first->copy()->addMonth());
-
-        // Resumen financiero
         $totals = [
-            'income' => (clone $income)->sum('amount'),
-            'spent' => (clone $gasto)
-                ->where('gasto.save', false)
-                ->sum('gasto.amount'),
-            'saving' => (clone $gasto)
-                ->where('gasto.save', true)
-                ->sum('gasto.amount'),
+            'income' => $user->incomes()->active()->inPeriod($from, $until)->sum('amount'),
+            'spent' => (clone $expenses)->consumption()->sum('amount'),
+            'saving' => (clone $expenses)->savings()->sum('amount'),
         ];
 
-        // Distribución de gastos de consumo por categoría
-        $breakdown = (clone $gasto)
-            ->where('gasto.save', false)
+        // Consumo por categoría, de mayor a menor.
+        $breakdown = (clone $expenses)
+            ->consumption()
             ->join('categoria', function ($join) {
-                $join->on(
-                    'categoria.id',
-                    '=',
-                    'gasto.id_category'
-                )->on(
-                    'categoria.user_id',
-                    '=',
-                    'gasto.user_id'
-                );
+                $join->on('categoria.id', '=', 'gasto.id_category')
+                    ->on('categoria.user_id', '=', 'gasto.user_id');
             })
+            ->toBase()
             ->select('categoria.description')
             ->selectRaw('SUM(gasto.amount) AS total')
             ->groupBy('categoria.id', 'categoria.description')
             ->orderByDesc('total')
             ->get();
 
-        return view('finance.report', compact(
-            'month',
-            'totals',
-            'breakdown'
-        ));
+        return view('finance.report', compact('month', 'totals', 'breakdown'));
+    }
+
+    /** Registros del módulo que pertenecen al usuario autenticado. */
+    private function ownedRecords(Request $request, FinanceModule $modulo): HasMany
+    {
+        return $request->user()->{$modulo->relation()}();
+    }
+
+    /**
+     * Busca el registro sin filtrar por usuario: la Policy decide si es
+     * tuyo y responde 404 si no lo es.
+     */
+    private function findRecord(FinanceModule $modulo, int $id): Model
+    {
+        return $modulo->model()::query()->findOrFail($id);
+    }
+
+    /** Valida con el Form Request del módulo y devuelve solo los campos permitidos. */
+    private function validated(FinanceModule $modulo): array
+    {
+        return app($modulo->request())->validated();
+    }
+
+    private function form(Request $request, FinanceModule $modulo, ?Model $record): View
+    {
+        return view('finance.form', [
+            'modulo' => $modulo->value,
+            'config' => $modulo->viewConfig(),
+            'item' => $record,
+            'categories' => $modulo->usesCategories() ? $this->activeCategories($request) : collect(),
+        ]);
+    }
+
+    private function activeCategories(Request $request): Collection
+    {
+        return $request->user()->categories()
+            ->active()
+            ->orderBy('description')
+            ->get(['id', 'description']);
+    }
+
+    /** Filtros del listado de gastos: tipo y (rango de fechas o mes). */
+    private function applyExpenseFilters(Request $request, HasMany|Builder $query): void
+    {
+        $type = $request->input('tipo');
+
+        if (in_array($type, ['ahorro', 'consumo'], true)) {
+            $type === 'ahorro' ? $query->savings() : $query->consumption();
+        }
+
+        if ($request->filled('desde') || $request->filled('hasta')) {
+            $range = $request->validate([
+                'desde' => ['required', 'date_format:Y-m-d'],
+                'hasta' => ['required', 'date_format:Y-m-d', 'after_or_equal:desde'],
+            ]);
+
+            $query->whereBetween('date', [$range['desde'], $range['hasta']]);
+
+            return;
+        }
+
+        if ($request->filled('mes')) {
+            $request->validate(['mes' => ['required', 'date_format:Y-m']]);
+
+            $from = Carbon::createFromFormat('!Y-m', $request->input('mes'));
+            $query->inPeriod($from, $from->copy()->addMonth());
+        }
     }
 }
