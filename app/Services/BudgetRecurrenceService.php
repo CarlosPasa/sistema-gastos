@@ -2,89 +2,126 @@
 
 namespace App\Services;
 
+use App\Models\Budget;
+use App\Models\Expense;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
+/**
+ * Presupuestos mensuales recurrentes con historial.
+ *
+ * Regla de negocio: cambiar el límite de un presupuesto afecta el mes elegido
+ * y los siguientes. Los meses anteriores conservan el límite que tenían.
+ * Cada cambio se guarda como una BudgetVersion (presupuesto_vigencia).
+ */
 class BudgetRecurrenceService
 {
-    /** Create initial period for a newly created recurring budget. */
-    public function initialize(int $budgetId, string $amount, string $month): void
+    /**
+     * @param  array{description: string, amount: string, id_category: int, effective_month: string}  $data
+     */
+    public function create(User $user, array $data): Budget
     {
-        $this->saveVersion($budgetId, $amount, $month);
+        return DB::transaction(function () use ($user, $data) {
+            $budget = $user->budgets()->create($this->budgetAttributes($data));
+
+            $this->saveVersion($budget, (string) $data['amount'], $data['effective_month']);
+
+            return $budget;
+        });
     }
 
-    /** Changing a budget's limit affects that month and later months only. */
-    public function change(int $budgetId, int $userId, string $amount, string $month): void
+    /**
+     * @param  array{description: string, amount: string, id_category: int, effective_month: string}  $data
+     */
+    public function update(Budget $budget, array $data): void
     {
-        $budget = DB::table('presupuesto')->where('id', $budgetId)
-            ->where('user_id', $userId)->first();
-        abort_unless($budget, 404);
+        $month = $data['effective_month'];
 
-        $lastVersion = DB::table('presupuesto_vigencia')
-            ->where('presupuesto_id', $budgetId)
-            ->orderByDesc('effective_month')->first();
+        $latestMonth = $budget->versions()->max('effective_month');
 
-        // Prevent a historical revision from overwriting future decisions.
-        if ($lastVersion && $month < Carbon::parse($lastVersion->effective_month)->format('Y-m')) {
+        // Un cambio histórico no puede sobrescribir decisiones posteriores.
+        if ($latestMonth && $month < Carbon::parse($latestMonth)->format('Y-m')) {
             throw ValidationException::withMessages([
                 'effective_month' => 'Ya existe una vigencia posterior. Elige ese mes o uno posterior.',
             ]);
         }
 
-        DB::transaction(function () use ($budgetId, $userId, $amount, $month) {
-            $this->saveVersion($budgetId, $amount, $month);
-            DB::table('presupuesto')->where('id', $budgetId)
-                ->where('user_id', $userId)
-                ->update(['amount' => $amount, 'updated_at' => now()]);
+        DB::transaction(function () use ($budget, $data, $month) {
+            $this->saveVersion($budget, (string) $data['amount'], $month);
+            $budget->update($this->budgetAttributes($data));
         });
     }
 
-    private function saveVersion(int $budgetId, string $amount, string $month): void
-    {
-        if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $month)) {
-            throw ValidationException::withMessages(['effective_month' => 'Mes de vigencia inválido.']);
-        }
-        DB::table('presupuesto_vigencia')->updateOrInsert(
-            ['presupuesto_id' => $budgetId, 'effective_month' => $month . '-01'],
-            ['amount' => $amount, 'updated_at' => now(), 'created_at' => now()]
-        );
-    }
-
-    /** Active monthly budgets, using the latest version not after requested month. */
+    /**
+     * Presupuestos activos del mes con su límite vigente y lo consumido.
+     * Los ahorros no cuentan como consumo.
+     *
+     * @return list<array{id: int, description: string, category: string, amount: float, spent: float, percent: float}>
+     */
     public function summary(int $userId, string $month): array
     {
-        $period = Carbon::createFromFormat('!Y-m', $month)->toDateString();
-        $first = Carbon::createFromFormat('!Y-m', $month)->startOfMonth()->toDateString();
-        $end = Carbon::createFromFormat('!Y-m', $month)->addMonth()->startOfMonth()->toDateString();
+        $period = Carbon::createFromFormat('!Y-m', $month);
+        $from = $period->copy()->startOfMonth();
+        $until = $period->copy()->addMonth()->startOfMonth();
 
+        // Consulta de reporte: el límite vigente es la última versión no
+        // posterior al mes pedido.
         $budgets = DB::table('presupuesto as p')
             ->join('categoria as c', function ($join) {
                 $join->on('c.id', '=', 'p.id_category')->on('c.user_id', '=', 'p.user_id');
             })
             ->join('presupuesto_vigencia as v', 'v.presupuesto_id', '=', 'p.id')
             ->where('p.user_id', $userId)->where('p.estado', true)
-            ->where('v.effective_month', '<=', $period)
-            ->whereRaw('v.effective_month = (SELECT MAX(v2.effective_month) FROM presupuesto_vigencia v2 WHERE v2.presupuesto_id = p.id AND v2.effective_month <= ?)', [$period])
+            ->whereRaw(
+                'v.effective_month = (SELECT MAX(v2.effective_month) FROM presupuesto_vigencia v2 WHERE v2.presupuesto_id = p.id AND v2.effective_month <= ?)',
+                [$from->toDateString()]
+            )
             ->select('p.id', 'p.description', 'p.id_category', 'c.description as category', 'v.amount as limit_amount')
-            ->orderBy('p.description')->get();
+            ->orderBy('p.description')
+            ->get();
 
-        $spent = DB::table('gasto')->where('user_id', $userId)->where('estado', true)
-            ->where('save', false)->where('date', '>=', $first)->where('date', '<', $end)
-            ->select('id_category')->selectRaw('SUM(amount) AS total')
-            ->groupBy('id_category')->pluck('total', 'id_category');
+        $spentByCategory = Expense::query()
+            ->where('user_id', $userId)
+            ->active()
+            ->consumption()
+            ->inPeriod($from, $until)
+            ->groupBy('id_category')
+            ->selectRaw('id_category, SUM(amount) AS total')
+            ->pluck('total', 'id_category');
 
-        // Budgets with the same category share consumption. They are not added together
-        // as if consumption happened twice. Prefer one active budget per category.
-        return $budgets->map(fn ($b) => [
-            'id' => $b->id,
-            'description' => $b->description,
-            'category' => $b->category,
-            'amount' => (float) $b->limit_amount,
-            'spent' => (float) ($spent[$b->id_category] ?? 0),
-            'percent' => (float) $b->limit_amount > 0
-                ? round((float) ($spent[$b->id_category] ?? 0) * 100 / (float) $b->limit_amount, 1)
-                : 0,
-        ])->all();
+        // Presupuestos de la misma categoría comparten el consumo (no se
+        // suma dos veces). Lo recomendable es uno activo por categoría.
+        return $budgets->map(function ($budget) use ($spentByCategory) {
+            $limit = (float) $budget->limit_amount;
+            $spent = (float) ($spentByCategory[$budget->id_category] ?? 0);
+
+            return [
+                'id' => $budget->id,
+                'description' => $budget->description,
+                'category' => $budget->category,
+                'amount' => $limit,
+                'spent' => $spent,
+                'percent' => $limit > 0 ? round($spent * 100 / $limit, 1) : 0,
+            ];
+        })->all();
+    }
+
+    private function saveVersion(Budget $budget, string $amount, string $month): void
+    {
+        if (! preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $month)) {
+            throw ValidationException::withMessages(['effective_month' => 'Mes de vigencia inválido.']);
+        }
+
+        $budget->versions()->updateOrCreate(
+            ['effective_month' => $month.'-01'],
+            ['amount' => $amount],
+        );
+    }
+
+    private function budgetAttributes(array $data): array
+    {
+        return array_intersect_key($data, array_flip(['description', 'amount', 'id_category']));
     }
 }

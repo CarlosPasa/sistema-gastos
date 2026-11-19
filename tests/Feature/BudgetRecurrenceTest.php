@@ -69,7 +69,12 @@ it('un cambio aplica desde el mes elegido sin alterar los meses anteriores', fun
 
 it('rechaza un cambio en un mes anterior a la última vigencia', function () {
     $id = createBudget(500, '2026-09');
-    $this->service->change($id, $this->user->id, '650', '2026-11');
+    $this->put("/mt2/presupuestos/{$id}", [
+        'description' => 'Comida mensual',
+        'amount' => 650,
+        'id_category' => $this->category,
+        'effective_month' => '2026-11',
+    ])->assertSessionHasNoErrors();
 
     $this->put("/mt2/presupuestos/{$id}", [
         'description' => 'Comida mensual',
